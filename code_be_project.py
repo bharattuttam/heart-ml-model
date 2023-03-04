@@ -184,7 +184,7 @@ def heart(age, gender, chestpaintype, restingbloodpressure, serumcholestrol, fas
     ax.bar(models, accuracies)
     ax.set_xlabel('Models')
     ax.set_ylabel('Accuracy')
-    ax.set_title('Machine Learning Models Accuracy')
+    ax.set_title('Machine LearninModels Accuracy')
 
     return SL, SD, SS, SR, fig
 
