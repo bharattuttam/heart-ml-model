@@ -1,6 +1,0 @@
-tensorflow>=1.15,<2.0
-scipy
-scikit-image
-numpy
-gradio
-scikit-learn
