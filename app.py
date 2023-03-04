@@ -12,7 +12,6 @@ ax.set_title('Machine Learning Models Accuracy')
 fig.show()
 import gradio as gr
 from PIL import Image
-%matplotlib inline
 def heart():
   img = Image.open("graph.jpg")
   return img
