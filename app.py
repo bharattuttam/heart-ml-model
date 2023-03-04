@@ -1,1 +1,1 @@
-!pip install gradio
+import matplotlib.pyplot as plt
