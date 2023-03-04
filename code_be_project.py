@@ -188,11 +188,11 @@ def heart(age, gender, chestpaintype, restingbloodpressure, serumcholestrol, fas
 
     return SL, SD, SS, SR, fig
 
-interface = gr.Interface(
+gr.Interface(
     fn=heart,
     inputs=["number", gr.Radio(["Male", "Female"]),gr.Dropdown(["Typical Angina", "Non Typical Angina", "Non Anginal Pain", "Asymptomatic"]), "number", "number", "number", gr.Dropdown(["0 - Nothing to note", "1 - ST-T abnormality", "2 - Possible or definite left ventricular hypertrophy"]), "number", gr.Radio(["No", "Yes"]), "number" , "number", "number", "number"],
     outputs=[gr.outputs.Label(label="Logistic Regression", type="text"),gr.outputs.Label(label="Decision Tree", type="auto"),gr.outputs.Label(label="Random Forest", type="text"),gr.outputs.Label(label="SVM", type="auto"),"plot"],
 server_name="0.0.0.0"
-)
+).launch()
 
 interface.launch()
