@@ -1,6 +1,3 @@
-from pyvirtualdisplay import Display
-import pyautogui
-import gradio as gr
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
@@ -16,84 +13,80 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import io
 import gradio as gr
-from gradio.components import Textbox
-
+import pyautogui
 
 def importdata():
-	#balance_data = pd.read_csv(io.BytesIO(uploaded['heart_disease_data.csv']))
-	balance_data = pd.read_csv('/content/heart_disease_data.csv')
-	# Printing the dataswet shape
-	print ("Dataset Length: ", len(balance_data))
-	print ("Dataset Shape: ", balance_data.shape)
-	
-	# Printing the dataset obseravtions
-	print ("Dataset: ",balance_data.head())
-  
-	return balance_data
+    balance_data = pd.read_csv('/content/heart_disease_data.csv')
+    # Printing the dataset shape
+    print("Dataset Length: ", len(balance_data))
+    print("Dataset Shape: ", balance_data.shape)
+
+    # Printing the dataset observations
+    print("Dataset: ", balance_data.head())
+
+    return balance_data
 
 
 def splitdatasetL(heart_data, input_data):
-  X = heart_data.drop(columns='target', axis=1)
-  Y = heart_data['target']
-  X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=2)
-  model = LogisticRegression()
-  model.fit(X_train, Y_train)
+    X = heart_data.drop(columns='target', axis=1)
+    Y = heart_data['target']
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X, Y, test_size=0.2, stratify=Y, random_state=2)
+    model = LogisticRegression()
+    model.fit(X_train, Y_train)
 
-  input_data_as_numpy_array= np.asarray(input_data)
+    input_data_as_numpy_array = np.asarray(input_data)
 
-  # reshape the numpy array as we are predicting for only on instance
-  input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
+    # reshape the numpy array as we are predicting for only on instance
+    input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
 
-  prediction = model.predict(input_data_reshaped)
+    prediction = model.predict(input_data_reshaped)
 
-  return prediction[0]
+    return prediction[0]
+
 
 def splitdataset(balance_data):
+    # Separating the target variable
+    X = balance_data.values[:, 0:13]
+    Y = balance_data.values[:, 13]
 
-	# Separating the target variable
-	X = balance_data.values[:, 0:13]
-	Y = balance_data.values[:, 13]
+    # Splitting the dataset into train and test
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, Y, test_size=0.3, random_state=100)
 
-	# Splitting the dataset into train and test
-	X_train, X_test, y_train, y_test = train_test_split(
-	X, Y, test_size = 0.3, random_state = 100)
-	
-	return X, Y, X_train, X_test, y_train, y_test
+    return X, Y, X_train, X_test, y_train, y_test
 
 
 def train_using_gini(X_train, X_test, y_train):
+    clf_gini = DecisionTreeClassifier(criterion="gini",
+                                       random_state=100, max_depth=3, min_samples_leaf=5)
 
-	clf_gini = DecisionTreeClassifier(criterion = "gini",
-			random_state = 100,max_depth=3, min_samples_leaf=5)
+    clf_gini.fit(X_train, y_train)
+    return clf_gini
 
-	clf_gini.fit(X_train, y_train)
-	return clf_gini
 
-def tarin_using_entropy(X_train, X_test, y_train):
+def train_using_entropy(X_train, X_test, y_train):
+    clf_entropy = DecisionTreeClassifier(
+        criterion="entropy", random_state=100, max_depth=3, min_samples_leaf=5)
 
-	clf_entropy = DecisionTreeClassifier(
-			criterion = "entropy", random_state = 100,
-			max_depth = 3, min_samples_leaf = 5)
-
-	clf_entropy.fit(X_train, y_train)
-	return clf_entropy
+    clf_entropy.fit(X_train, y_train)
+    return clf_entropy
 
 
 # Function to make predictions
 def prediction(X_test, clf_object):
+    # Predicton on test with giniIndex
+    y_pred = clf_object.predict(X_test)
+    print("Predicted values:")
+    print(y_pred)
+    return y_pred
 
-	# Predicton on test with giniIndex
-	y_pred = clf_object.predict(X_test)
-	print("Predicted values:")
-	print(y_pred)
-	return y_pred
 
-
-def RandomF(X_train, y_train, X_test):
-  rf_clf = RandomForestClassifier(n_estimators=1000, random_state=42)
-  rf_clf.fit(X_train, y_train)
-  pred = rf_clf.predict(X_test)
-  return pred
+def random_forest(X_train, y_train, X_test):
+    rf_clf = RandomForestClassifier(n_estimators=1000, random_state=42)
+    rf_clf.fit(X_train, y_train)
+    pred = rf_clf.predict(X_test)
+    return pred
 
 
 def SBM(df, X_test):
@@ -108,7 +101,6 @@ def SBM(df, X_test):
   y_pred = svm.predict(X_test_scaled)
   return y_pred
 
-
 def SBF(new_data):
   df = pd.read_csv('heart_disease_data.csv')
   X = df.drop('target', axis=1)
@@ -121,13 +113,16 @@ def SBF(new_data):
   print(y_pred[0])
   return y_pred[0]
 
-
 from PIL import Image
 def heart(age, gender, chestpaintype, restingbloodpressure, serumcholestrol, fastingbloodsugar, resting_ecg_result, maximumheartrate, exerciseinduced_angina, oldpeak, slope, ca, thal):
       data = importdata()
       X, Y, X_train, X_test, y_train, y_test = splitdataset(data)
       clf_gini = train_using_gini(X_train, X_test, y_train)
-      clf_entropy = tarin_using_entropy(X_train, X_test, y_train)
+      clf_entropy = train_using_entropy(X_train, X_test, y_train)
+      
+#       x = 10
+# result = "positive" if x > 0 else "non-positive"
+# print(result)  # output: "positive"
       
       fbs = 1 if fastingbloodsugar > 120 else 0
       g   = 0 if gender == "Female" else 1
@@ -168,12 +163,9 @@ def heart(age, gender, chestpaintype, restingbloodpressure, serumcholestrol, fas
                           'thalach':[maximumheartrate],'exang':[exang],'oldpeak': [oldpeak],
                           'slope':[slope],   'ca':[ca],  'thal':[thal]})
       y_pred_gini = prediction(X_test, clf_gini)
-      k = RandomF(X_train, y_train, X_test)
-      #m = SBM(data, new_data)
+      k = random_forest(X_train, y_train, X_test)
       m = SBF(new_data)
-      print("ASDASDASDADS")
       print(type(m))
-      #m = 0
       pred = splitdatasetL(data, XX)
       if y_pred_gini[1] == 1.0:
         SD = "Based on our Decision Tree Machine Learning model which has an accuracy of 82.42%, you have high chances of having heart disease"
@@ -212,28 +204,42 @@ def take_screenshot():
     # return the path to the saved screenshot
     return "screenshot.png"
 
+import gradio as gr
 
+# define the input components
+age = gr.inputs.Number(label="Age")
+gender = gr.inputs.Radio(["Female", "Male"], label="Gender")
+chestpaintype = gr.inputs.Dropdown(["Typical Angina", "Non Typical Angina", "Non Anginal Pain", "Asymptomatic"], label="Chest Pain Type")
+restingbloodpressure = gr.inputs.Number(label="Resting Blood Pressure")
+serumcholestrol = gr.inputs.Number(label="Serum Cholesterol")
+fastingbloodsugar = gr.inputs.Number(label="Fasting Blood Sugar")
+resting_ecg_result = gr.inputs.Dropdown(["0 - Nothing to note", "1 - ST-T abnormality", "2 - Left ventricular hypertrophy"], label="Resting ECG Result")
+maximumheartrate = gr.inputs.Number(label="Maximum Heart Rate Achieved")
+exerciseinduced_angina = gr.inputs.Radio(["No", "Yes"], label="Exercise Induced Angina")
+oldpeak = gr.inputs.Number(label="ST Depression Induced by Exercise")
+slope = gr.inputs.Number(label="The Slope of the Peak Exercise ST Segment")
+ca = gr.inputs.Number(label="Number of Major Vessels (0-3) Colored by Flourosopy")
+thal = gr.inputs.Dropdown(["3 - Normal", "6 - Fixed Defect", "7 - Reversible Defect"], label="Thalassemia")
 
-interface = gr.mix.Parallel(
-      title="Heart Disease Prediction",
-      fn=[heart,take_screenshot],
-      inputs=["number",
-              gr.Radio(["Male", "Female"]),
-              gr.Dropdown(["Typical Angina", "Non Typical Angina", "Non Anginal Pain", "Asymptomatic"]), 
-              "number", "number", "number", 
-              gr.Dropdown(["0 - Nothing to note", "1 - ST-T abnormality", "2 - Possible or definite left ventricular hypertrophy"]),
-              "number",
-              gr.Radio(["No", "Yes"]),
-              "number" , "number", "number", "number"],
-      outputs=[gr.outputs.Label(label="Logistic Regression", type="text"),
-               gr.outputs.Label(label="Decision Tree", type="auto"),
-               gr.outputs.Label(label="Random Forest", type="text"),
-               gr.outputs.Label(label="SVM", type="auto"),
-               gr.outputs.Image(type="pil", label = "Model Accuracies"),
-               "file"],
-      
-      description="Click the button to take a screenshot of this Gradio interface",
-  )
+# define the output components
+SL = gr.outputs.Textbox(label="Logistic Regression")
+SD = gr.outputs.Textbox(label="Decision Tree")
+SS = gr.outputs.Textbox(label="SVM")
+SR = gr.outputs.Textbox(label="Random Forest")
+img = gr.outputs.Image(type="pil", label="Accuracy of Machine Learning Models")
 
+# create the Gradio interface
+iface = gr.Interface(fn=heart, inputs=[age, gender, chestpaintype, restingbloodpressure, serumcholestrol, fastingbloodsugar, resting_ecg_result, maximumheartrate, exerciseinduced_angina, oldpeak, slope, ca, thal], outputs=[SL, SD, SS, SR, img], title="Heart Disease Prediction", live=True)
 
-interface.launch(debug = True)
+# define the input components
+screenshot_button = gr.inputs.Button(label="Take Screenshot")
+
+# define the output components
+screenshot_output = gr.outputs.Image(label="Screenshot")
+
+# create the Gradio interface
+iface2 = gr.Interface(fn=take_screenshot, inputs=screenshot_button, outputs=screenshot_output, title="Take Screenshot")
+
+# launch the interfaces
+iface.launch()
+iface2.launch()
