@@ -169,11 +169,8 @@ def heart(age, gender, chestpaintype, restingbloodpressure, serumcholestrol, fas
                           'slope':[slope],   'ca':[ca],  'thal':[thal]})
       y_pred_gini = prediction(X_test, clf_gini)
       k = RandomF(X_train, y_train, X_test)
-      #m = SBM(data, new_data)
       m = SBF(new_data)
-      print("ASDASDASDADS")
       print(type(m))
-      #m = 0
       pred = splitdatasetL(data, XX)
       if y_pred_gini[1] == 1.0:
         SD = "Based on our Decision Tree Machine Learning model which has an accuracy of 82.42%, you have high chances of having heart disease"
@@ -214,7 +211,7 @@ def take_screenshot():
 
 
 
-interface = gr.mix.Parallel(
+interface = gr.Interface(
       title="Heart Disease Prediction",
       fn=[heart,take_screenshot],
       inputs=["number",

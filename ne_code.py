@@ -16,7 +16,7 @@ import gradio as gr
 import pyautogui
 
 def importdata():
-    balance_data = pd.read_csv('/content/heart_disease_data.csv')
+    balance_data = pd.read_csv('heart_disease_data.csv')
     # Printing the dataset shape
     print("Dataset Length: ", len(balance_data))
     print("Dataset Shape: ", balance_data.shape)
@@ -206,6 +206,22 @@ def take_screenshot():
 
 import gradio as gr
 
+
+    #  fn=[heart,take_screenshot],
+    #   inputs=["number",
+    #           gr.Radio(["Male", "Female"]),
+    #           gr.Dropdown(["Typical Angina", "Non Typical Angina", "Non Anginal Pain", "Asymptomatic"]), 
+    #           "number", "number", "number", 
+    #           gr.Dropdown(["0 - Nothing to note", "1 - ST-T abnormality", "2 - Possible or definite left ventricular hypertrophy"]),
+    #           "number",
+    #           gr.Radio(["No", "Yes"]),
+    #           "number" , "number", "number", "number"],
+    #   outputs=[gr.outputs.Label(label="Logistic Regression", type="text"),
+    #            gr.outputs.Label(label="Decision Tree", type="auto"),
+    #            gr.outputs.Label(label="Random Forest", type="text"),
+    #            gr.outputs.Label(label="SVM", type="auto"),
+    #            gr.outputs.Image(type="pil", label = "Model Accuracies"),
+    #            "file"],
 # define the input components
 age = gr.inputs.Number(label="Age")
 gender = gr.inputs.Radio(["Female", "Male"], label="Gender")
@@ -219,7 +235,7 @@ exerciseinduced_angina = gr.inputs.Radio(["No", "Yes"], label="Exercise Induced 
 oldpeak = gr.inputs.Number(label="ST Depression Induced by Exercise")
 slope = gr.inputs.Number(label="The Slope of the Peak Exercise ST Segment")
 ca = gr.inputs.Number(label="Number of Major Vessels (0-3) Colored by Flourosopy")
-thal = gr.inputs.Dropdown(["3 - Normal", "6 - Fixed Defect", "7 - Reversible Defect"], label="Thalassemia")
+thal = gr.inputs.Number(label="Thalassemia")
 
 # define the output components
 SL = gr.outputs.Textbox(label="Logistic Regression")
@@ -232,10 +248,10 @@ img = gr.outputs.Image(type="pil", label="Accuracy of Machine Learning Models")
 iface = gr.Interface(fn=heart, inputs=[age, gender, chestpaintype, restingbloodpressure, serumcholestrol, fastingbloodsugar, resting_ecg_result, maximumheartrate, exerciseinduced_angina, oldpeak, slope, ca, thal], outputs=[SL, SD, SS, SR, img], title="Heart Disease Prediction", live=True)
 
 # define the input components
-screenshot_button = gr.inputs.Button(label="Take Screenshot")
+screenshot_button = gr.Button(label="Take Screenshot")
 
 # define the output components
-screenshot_output = gr.outputs.Image(label="Screenshot")
+screenshot_output = gr.outputs.Image(label="Screenshot",type="pil")
 
 # create the Gradio interface
 iface2 = gr.Interface(fn=take_screenshot, inputs=screenshot_button, outputs=screenshot_output, title="Take Screenshot")
